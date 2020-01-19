@@ -52,9 +52,10 @@ main {
     box-shadow: 0 0 3px #888;
     box-sizing: border-box;
     padding: 16px;
+    cursor: pointer;
 
     &:hover {
-        box-shadow: 0 0 3px rgb(72, 197, 47);
+        box-shadow: 0 0 5px rgb(72, 197, 47);
     }
 
     &>p {

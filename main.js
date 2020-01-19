@@ -14,7 +14,8 @@ const renderGoodsItem = ({title, price, img = 'https://via.placeholder.com/150'}
 
 const renderGoodsList = (list, container='.goods-list') => {
     const goodsList = list.map(good => renderGoodsItem(good));
-    document.querySelector(container).innerHTML = goodsList;
+    this.goodsList= goodsList
+    document.querySelector(container).innerHTML = goodsList.join('');
 };
 
 renderGoodsList(goods);

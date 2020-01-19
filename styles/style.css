@@ -60,11 +60,12 @@ main {
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   padding: 16px;
+  cursor: pointer;
 }
 
 .goods-item:hover {
-  -webkit-box-shadow: 0 0 3px #48c52f;
-          box-shadow: 0 0 3px #48c52f;
+  -webkit-box-shadow: 0 0 5px #48c52f;
+          box-shadow: 0 0 5px #48c52f;
 }
 
 .goods-item > p {
