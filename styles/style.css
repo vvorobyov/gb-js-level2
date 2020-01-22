@@ -1,5 +1,5 @@
 html {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 16px;
 }
 
@@ -11,18 +11,12 @@ header {
   background-color: #d1b2b2;
   width: 100%;
   padding: 12px;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-  display: -webkit-box;
-  display: -ms-flexbox;
+  box-sizing: border-box;
   display: flex;
-  -webkit-box-pack: end;
-      -ms-flex-pack: end;
-          justify-content: flex-end;
+  justify-content: flex-end;
   position: fixed;
   top: 0;
 }
-
 header > .cart-button {
   border: none;
   padding: 6px 24px;
@@ -32,43 +26,35 @@ header > .cart-button {
   color: #000;
   border-radius: 15px;
 }
-
 header > .cart-button:focus {
   outline: none;
 }
 
 main {
-  margin-top: 54px;
+  margin: 54px auto 0;
+  max-width: 1200px;
 }
 
 .goods-list {
   padding: 16px;
-  display: -ms-grid;
   display: grid;
   gap: 16px;
-  -ms-grid-columns: (200px)[auto-fit];
-      grid-template-columns: repeat(auto-fit, 200px);
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  grid-template-columns: repeat(auto-fit, 200px);
+  justify-content: center;
 }
 
 .goods-item {
   text-align: center;
-  -webkit-box-shadow: 0 0 3px #888;
-          box-shadow: 0 0 3px #888;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-shadow: 0 0 3px #888;
+  box-sizing: border-box;
   padding: 16px;
   cursor: pointer;
 }
-
 .goods-item:hover {
-  -webkit-box-shadow: 0 0 5px #48c52f;
-          box-shadow: 0 0 5px #48c52f;
+  box-shadow: 0 0 5px #48c52f;
 }
-
 .goods-item > p {
   margin-bottom: 0;
 }
+
 /*# sourceMappingURL=style.css.map */
