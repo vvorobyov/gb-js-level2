@@ -56,6 +56,11 @@ class GoodsList {
         this.element.append(...goodsElements);
     }
 
+    getSummaryCost() {
+        const reducer = (summ, {price}) => summ + price;
+        return this.goods.reduce(reducer, 0);
+    }
+
     addToCart = (good) => {
         this.cart.addItem(good)
     }
@@ -135,3 +140,6 @@ const cart = new Cart(goods[1], goods[2], goods[1]);
 const list = new GoodsList(cart);
 list.fetchGoods();
 list.render();
+console.log(`Стоимоть всех товаров: ${list.getSummaryCost()}`);
+
+
