@@ -35,8 +35,9 @@ class GoodItem {
 }
 
 class GoodsList {
-    constructor() {
+    constructor(cart) {
         this.goods = [];
+        this.cart = cart;
         this.element = document.querySelector('.goods-list')
     }
 
@@ -55,11 +56,82 @@ class GoodsList {
         this.element.append(...goodsElements);
     }
 
-    addToCart(good) {
-        console.log(good.id, good);
+    addToCart = (good) => {
+        this.cart.addItem(good)
     }
 }
 
-const list = new GoodsList();
+
+class CartItem extends GoodItem{
+    constructor({id, title , price, img}) {
+        super(id, title , price, img);
+    }
+
+    _render() {
+        this.element.classList.add('cart-item');
+        this.element.id = `chartItem${this.id}`;
+        this.element.innerHTML = `
+                <img src="${this.img}" alt="${this.title}">
+                <h3>${this.title}</h3>
+                <p>${this.price}</p>
+                <button>Удалить</button>
+        `
+    }
+}
+
+
+class Cart {
+    constructor(...items) {
+        this.cartItems = items.map(item => new CartItem(item)); // На случай наличия ранее сохраненных данных о покупках
+        this.element = document.querySelector('.cart-list');
+        this.cartButton = document.querySelector('.cart-button');
+        if (this.cartItems.length){
+            this.getSummaryCost();
+        }
+        this._initRender();
+    }
+
+    _initRender(){
+        const cartElements = this.cartItems.map(
+            (cartItem) => {
+                cartItem.initListener(this.removeItem);
+                return cartItem.element;
+        });
+        this.element.append(...cartElements);
+    }
+
+    getSummaryCost() {
+        const reducer = (summ, {price}) => summ + price;
+        const cost = this.cartItems.reduce(reducer, 0);
+        if (cost){
+            this.cartButton.textContent = `Товаров на ${cost} р.`;
+        }else {
+            this.cartButton.textContent = 'Корзина';
+        }
+        return cost
+    }
+
+    addItem(goodItem){
+        const cartItem = new CartItem(goodItem);
+        this.cartItems.push(cartItem);
+        cartItem.initListener(this.removeItem);
+        this.element.appendChild(cartItem.element);
+        this.getSummaryCost();
+    }
+
+    removeItem = (cartItem) => {
+        const itemIndex = this.cartItems.indexOf(cartItem);
+        cartItem.element.remove();
+        this.cartItems.splice(itemIndex, 1);
+        this.getSummaryCost()
+    };
+
+    toShoping(){}
+
+}
+
+
+const cart = new Cart(goods[1], goods[2], goods[1]);
+const list = new GoodsList(cart);
 list.fetchGoods();
 list.render();

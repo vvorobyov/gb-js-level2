@@ -40,7 +40,11 @@ main {
     max-width: 1200px;
 }
 
-.goods-list {
+h2 {
+    text-align: center;
+}
+
+.goods-list, .cart-list {
     padding: 16px;
     display: grid;
     gap: 16px;
@@ -48,7 +52,7 @@ main {
     justify-content: center;
 }
 
-.goods-item {
+.goods-item, .cart-item {
     text-align: center;
     box-shadow: 0 0 3px #888;
     box-sizing: border-box;
