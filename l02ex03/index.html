@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lesson2 ex 03</title>
+</head>
+<body>
+    <h1>Заказать бургер</h1>
+    <label for="burger_size">Размер</label>
+    <select id="burger_size">
+        <option value="small">Маленький</option>
+        <option value="big">Большой</option>
+    </select><br>
+    <fieldset id="stuffing">
+        <legend>Начинка</legend>
+        <label for="cheese">С сыром</label>
+        <input type="checkbox" id="cheese"><br>
+        <label for="salad">С салатом</label>
+        <input type="checkbox" id="salad"><br>
+        <label for="potato">С картофелем</label>
+        <input type="checkbox" id="potato">
+    </fieldset>
+    <button id="make">Заказать</button>
+    <br>
+    <fieldset id="topping" disabled>
+        <legend>Дополнительные опции</legend>
+        <label for="seasoning">Посыпать приправой</label>
+        <input type="checkbox" id="seasoning"><br>
+        <label for="mayonnaise">Поилить майонезом</label>
+        <input type="checkbox" id="mayonnaise">
+    </fieldset>
+    <br>
+    <button id="orderDetailBtn" disabled>Детали заказа</button>
+    <div>Вы заказали: <br><span id="orderDetail"></span></div>
+</body>
+<script src="burger.js"></script>
+</html>
