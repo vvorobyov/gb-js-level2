@@ -66,7 +66,6 @@ class GoodsList {
                     const newGood = new GoodItem(good.id_product, good.product_name, good.price, good.img);
                     this.goods.push(newGood);
                 });
-                return this;
             },
             (response, code) => {
                 alert(`Response code = ${code}\n Response data = ${response}`);
@@ -112,17 +111,37 @@ class CartItem extends GoodItem{
 
 
 class Cart {
-    constructor(...items) {
-        this.cartItems = items.map(item => new CartItem(item)); // На случай наличия ранее сохраненных данных о покупках
+    constructor() {
+        this.cartItems = []; // На случай наличия ранее сохраненных данных о покупках
         this.element = document.querySelector('.cart-list');
         this.cartButton = document.querySelector('.cart-button');
-        if (this.cartItems.length){
-            this.getSummaryCost();
-        }
-        this._initRender();
     }
 
-    _initRender(){
+    get countGoods(){
+        return this.cartItems.length;
+    }
+    get amount(){
+        const reducer = (summ, {price}) => summ + price;
+        return this.cartItems.reduce(reducer, 0);
+    }
+
+    fetchCart(){
+        return makeGETRequest(`${API_URL}/getBasket.json`).then(
+            (response) => {
+                const cartItems = JSON.parse(response).contents;
+                cartItems.forEach(cartItem => {
+                    const newItem = new CartItem(cartItem);
+                    this.cartItems.push(newItem);
+                });
+                this.renderCartButton();
+            },
+            (response, code) => {
+                alert(`Response code = ${code}\n Response data = ${response}`);
+            }
+        )
+    }
+
+    render(){
         const cartElements = this.cartItems.map(
             (cartItem) => {
                 cartItem.initListener(this.removeItem);
@@ -131,30 +150,53 @@ class Cart {
         this.element.append(...cartElements);
     }
 
-    getSummaryCost() {
-        const reducer = (summ, {price}) => summ + price;
-        const cost = this.cartItems.reduce(reducer, 0);
-        if (cost){
-            this.cartButton.textContent = `Товаров на ${cost} р.`;
+    renderCartButton() {
+        if (this.countGoods){
+            this.cartButton.textContent = `Товаров на ${this.amount} р.`;
         }else {
             this.cartButton.textContent = 'Корзина';
         }
-        return cost
     }
 
     addItem(goodItem){
-        const cartItem = new CartItem(goodItem);
-        this.cartItems.push(cartItem);
-        cartItem.initListener(this.removeItem);
-        this.element.appendChild(cartItem.element);
-        this.getSummaryCost();
+        const request = {id_product: goodItem.id_product};
+        makeGETRequest(`${API_URL}/addToBasket.json`, request).then(
+            response => {
+                const data = JSON.parse(response);
+                if (data.result === 1){
+                    const cartItem = new CartItem(goodItem);
+                    this.cartItems.push(cartItem);
+                    cartItem.initListener(this.removeItem);
+                    this.element.appendChild(cartItem.element);
+                    this.renderCartButton();
+                } else {
+                    alert(`Error add ${goodItem.product_name} to cart!`);
+                }
+            },
+            (response, code) => {
+                alert(`Response code = ${code}\n Response data = ${response}`);
+            }
+        )
     }
 
     removeItem = (cartItem) => {
         const itemIndex = this.cartItems.indexOf(cartItem);
-        cartItem.element.remove();
-        this.cartItems.splice(itemIndex, 1);
-        this.getSummaryCost()
+        const request = {id_product: cartItem.id_product};
+        makeGETRequest(`${API_URL}/deleteFromBasket.json`, JSON.stringify(request)).then(
+            response => {
+                const data = JSON.parse(response);
+                if (data.result === 1){
+                    cartItem.element.remove();
+                    this.cartItems.splice(itemIndex, 1);
+                    this.renderCartButton();
+                } else {
+                    alert(`Error remove ${cartItem.product_name} from cart!`);
+                }
+            },
+            (response, code) => {
+                alert(`Response code = ${code}\n Response data = ${response}`);
+            }
+        );
     };
 
     toShoping(){}
@@ -164,10 +206,12 @@ class Cart {
 
 const cart = new Cart();
 const list = new GoodsList(cart);
-list.fetchGoods().then((list) => {
-    list.render();
-});
-// list.render();
-console.log(`Стоимоть всех товаров: ${list.getSummaryCost()}`);
+list.fetchGoods()
+    .then(() => list.render())
+    .then(() => console.log(`Стоимоть всех товаров: ${list.getSummaryCost()}`));
+cart.fetchCart()
+    .then(() => cart.render());
+
+
 
 
