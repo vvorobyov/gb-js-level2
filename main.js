@@ -1,35 +1,33 @@
-const goods = [
-    {id: 1, title: "Робот-пылесос xiaomi", price: 20000, img: 'https://via.placeholder.com/150' },
-    {id: 2, title: "Samsung Galaxy", price: 21500, img: 'https://via.placeholder.com/150' },
-    {id: 3, title: "Стиральная машина hotpoint", price: 32000, img: 'https://via.placeholder.com/150' },
-    {id: 4, title: "Умные часы apple watch", price: 26000, img: 'https://via.placeholder.com/150' },
-
-];
-
 const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
 
-function makeGETRequest(url, callback){
+function makeGETRequest(url, body){
     let xhr;
     if (window.XMLHttpRequest){
         xhr = new XMLHttpRequest();
     } else if (window.ActiveXObject) {
         xhr = new ActiveXObject('Microsoft.XMLHTTP');
     }
-
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4){
-            callback(xhr.responseText);
+    const promise = new Promise((resolve, reject) => {
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4) {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    resolve(xhr.responseText, xhr.status);
+                } else {
+                    reject(xhr.responseText, xhr.status);
+                }
+            }
         }
-    };
+    });
 
     xhr.open('GET', url, true);
-    xhr.send();
+    xhr.send(body);
+    return promise;
 }
 
 class GoodItem {
-    constructor(id, title , price, img='https://via.placeholder.com/150') {
-        this.id = id;
-        this.title = title;
+    constructor(id_product, product_name , price, img='https://via.placeholder.com/150') {
+        this.id_product = id_product;
+        this.product_name = product_name;
         this.price = price;
         this.img = img;
         this.element = document.createElement('div');
@@ -38,10 +36,10 @@ class GoodItem {
 
     _render() {
         this.element.classList.add('goods-item');
-        this.element.id = `goodsItem${this.id}`;
+        this.element.id = `goodsItem${this.id_product}`;
         this.element.innerHTML = `
-                <img src="${this.img}" alt="${this.title}">
-                <h3>${this.title}</h3>
+                <img src="${this.img}" alt="${this.product_name}">
+                <h3>${this.product_name}</h3>
                 <p>${this.price}</p>
                 <button>Добавить</button>
         `
@@ -61,17 +59,19 @@ class GoodsList {
     }
 
     fetchGoods() {
-        makeGETRequest( `${API_URL}/catalogData.json`, (response) => {
-            const goods = JSON.parse(response);
-            goods.forEach(good => {
-                console.log(good);
-                const newGood = new GoodItem(good.id_product, good.product_name, good.price, good.img);
-                debugger;
-                console.log(this);
-                this.goods.push(newGood);
-            });
-            this.render();
-        })
+        return makeGETRequest( `${API_URL}/catalogData.json`).then(
+            (response) => {
+                const goods = JSON.parse(response);
+                goods.forEach(good => {
+                    const newGood = new GoodItem(good.id_product, good.product_name, good.price, good.img);
+                    this.goods.push(newGood);
+                });
+                return this;
+            },
+            (response, code) => {
+                alert(`Response code = ${code}\n Response data = ${response}`);
+            }
+        )
     }
 
     render() {
@@ -94,16 +94,16 @@ class GoodsList {
 
 
 class CartItem extends GoodItem{
-    constructor({id, title , price, img}) {
-        super(id, title , price, img);
+    constructor({id_product, product_name , price, img}) {
+        super(id_product, product_name , price, img);
     }
 
     _render() {
         this.element.classList.add('cart-item');
         this.element.id = `chartItem${this.id}`;
         this.element.innerHTML = `
-                <img src="${this.img}" alt="${this.title}">
-                <h3>${this.title}</h3>
+                <img src="${this.img}" alt="${this.product_name}">
+                <h3>${this.product_name}</h3>
                 <p>${this.price}</p>
                 <button>Удалить</button>
         `
@@ -162,9 +162,11 @@ class Cart {
 }
 
 
-const cart = new Cart(goods[1], goods[2], goods[1]);
+const cart = new Cart();
 const list = new GoodsList(cart);
-list.fetchGoods();
+list.fetchGoods().then((list) => {
+    list.render();
+});
 // list.render();
 console.log(`Стоимоть всех товаров: ${list.getSummaryCost()}`);
 
