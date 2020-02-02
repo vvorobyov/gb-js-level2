@@ -10,16 +10,34 @@
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-<header>
-    <input type="text" class="goods-search">
-    <button class="search-button" type="button">Искать</button>
-    <button class="cart-button">Корзина</button>
-</header>
-<main>
-    <div class="goods-list"></div>
-    <h2>Временная реализация корзины</h2>
-    <div class="cart-list"></div>
-</main>
+<div id="app">
+    <header>
+        <form action="#" class="goods-search" @submit="filterGoods">
+            <input type="text" class="goods-search" v-model="searchLine">
+            <button class="search-button button">Искать</button>
+        </form>
+        <div class="cart">
+            <button class="cart-button button">Корзина</button>
+            <div class="cart-container">
+                <ul class="cart-goods" v-if="isVisibleCart"></ul>
+                <h2 v-else class="emptyCart">Корзина пуста</h2>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="goods-list">
+            <div class="goods-item" v-for="good in filteredGoods" :key="good.id_product">
+                <img src="https://via.placeholder.com/150" alt="">
+                <h3>{{ good.product_name }}</h3>
+                <p>{{ good.price }}</p>
+                <button class="button">Добавить</button>
+            </div>
+            <h2 class="emptyGoodList" v-if="isEmptyGoodsList">Нет данных</h2>
+        </div>
+    </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="main.js"></script>
 </body>
+
 </html>
