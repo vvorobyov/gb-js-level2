@@ -25,13 +25,14 @@ function makeGETRequest(url, body){
 }
 
 class GoodItem {
-    constructor(id_product, product_name , price, img='https://via.placeholder.com/150') {
+    constructor(id_product, product_name , price, img='https://via.placeholder.com/150', buttonCallback) {
         this.id_product = id_product;
         this.product_name = product_name;
         this.price = price;
         this.img = img;
         this.element = document.createElement('div');
         this._render();
+        this.initListener(buttonCallback)
     }
 
     _render() {
@@ -54,6 +55,7 @@ class GoodItem {
 class GoodsList {
     constructor(cart) {
         this.goods = [];
+        this.filteredGoods = [];
         this.cart = cart;
         this.element = document.querySelector('.goods-list')
     }
@@ -63,8 +65,9 @@ class GoodsList {
             (response) => {
                 const goods = JSON.parse(response);
                 goods.forEach(good => {
-                    const newGood = new GoodItem(good.id_product, good.product_name, good.price, good.img);
+                    const newGood = new GoodItem(good.id_product, good.product_name, good.price, good.img, this.addToCart);
                     this.goods.push(newGood);
+                    this.filteredGoods.push(newGood);
                 });
             },
             (response, code) => {
@@ -74,13 +77,20 @@ class GoodsList {
     }
 
     render() {
-        const goodsElements = this.goods.map((good) => {
-            good.initListener(this.addToCart);
-            return good.element;
-        });
+        this.element.innerHTML = '';
+        const goodsElements = this.filteredGoods.map((good) => good.element);
         this.element.append(...goodsElements);
     }
 
+    filterGoods(value){
+        const regext = new RegExp(value, 'i');
+        this.filteredGoods = this.goods.filter(good => regext.test(good.product_name));
+        if (this.filteredGoods.length) {
+            this.render();
+        }else{
+            this.element.innerHTML = `<div> Не найдено совпадений для "${value}"</div>`;
+            }
+    }
     getSummaryCost() {
         const reducer = (summ, {price}) => summ + price;
         return this.goods.reduce(reducer, 0);
@@ -93,8 +103,8 @@ class GoodsList {
 
 
 class CartItem extends GoodItem{
-    constructor({id_product, product_name , price, img}) {
-        super(id_product, product_name , price, img);
+    constructor({id_product, product_name , price, img}, buttonCallback) {
+        super(id_product, product_name , price, img, buttonCallback);
     }
 
     _render() {
@@ -130,7 +140,7 @@ class Cart {
             (response) => {
                 const cartItems = JSON.parse(response).contents;
                 cartItems.forEach(cartItem => {
-                    const newItem = new CartItem(cartItem);
+                    const newItem = new CartItem(cartItem, this.removeItem);
                     this.cartItems.push(newItem);
                 });
                 this.renderCartButton();
@@ -142,11 +152,7 @@ class Cart {
     }
 
     render(){
-        const cartElements = this.cartItems.map(
-            (cartItem) => {
-                cartItem.initListener(this.removeItem);
-                return cartItem.element;
-        });
+        const cartElements = this.cartItems.map(cartItem => cartItem.element);
         this.element.append(...cartElements);
     }
 
@@ -211,6 +217,14 @@ list.fetchGoods()
     .then(() => console.log(`Стоимоть всех товаров: ${list.getSummaryCost()}`));
 cart.fetchCart()
     .then(() => cart.render());
+
+const searchButton = document.querySelector('.search-button'),
+    searchInput = document.querySelector('.goods-search');
+
+searchButton.addEventListener('click', (event) => {
+    const value = searchInput.value;
+    list.filterGoods(value)
+});
 
 
 

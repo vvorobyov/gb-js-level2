@@ -14,12 +14,14 @@ header {
     width: 100%;
     padding: 12px;
     box-sizing: border-box;
-    display: flex;
-    justify-content: flex-end;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    column-gap: 14px;
+    //justify-content: flex-end;
     position: fixed;
     top: 0;
 
-    & > .cart-button {
+    & > .cart-button, & > .search-button {
         border: none;
         padding: 6px 24px;
         font-size: 1rem;
