@@ -35,12 +35,9 @@ header {
     }
 }
 
-.goods-search {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    column-gap: 14px;
+.goods-search-value {
+    width: 100%;
 }
-
 
 .cart {
     position: relative;
@@ -50,16 +47,60 @@ header {
     }
     & > .cart-container {
         position: absolute;
-        display: none;
+        margin-top: 14px;
         width: 500px;
         max-width: calc(100vw - 28px);
         right: 0;
         background-color: #fff;
         border: 1px solid #f6f6f6;
-        box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3);    }
-    &:hover {
-        & > .cart-container{
+        box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3);
+
+        & h4 {
+            text-align: center;
+        }
+    }
+}
+
+.cart-goods {
+    list-style: none;
+    padding: 0 16px;
+
+    & > .cart-item {
+        display: grid;
+        grid-template-columns: 1fr 70px 19px auto 19px;
+        column-gap: 5px;
+        margin: 2px 0;
+        padding: 2px 0;
+        & > .cartBtn {
+            margin: 0;
+            padding: 0;
+            width: 18px;
+            height: 18px;
+            font-weight: bold;
+            text-align: center;
+            background: $base-color;
+            border-radius: 50%;
+            border: none;
+            outline: none;
+        }
+        & > .cart-item-price {
             display: block;
+            justify-self: end;
+
+            &:after {
+                content: 'р.';
+            }
+        }
+        &:hover {
+            background: #fffc3a;
+        }
+        & > .cart-item-count {
+            display: block;
+            justify-self: end;
+
+            &:after {
+                content: 'шт.';
+            }
         }
     }
 }
@@ -72,7 +113,12 @@ main {
 h2 {
     text-align: center;
 }
-
+.goods-not-found{
+    padding: 16px;
+    & > h3 {
+        text-align: center;
+    }
+}
 .goods-list {
     padding: 16px;
     display: grid;
@@ -97,3 +143,39 @@ h2 {
     }
 }
 
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.5s;
+}
+
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}
+
+.hotify-list {
+    position: fixed;
+    width: 360px;
+    max-height: calc(100vh - 58px);
+    top: 59px;
+    left: 0;
+    overflow: auto;
+
+    & > .notify{
+        margin: 5px;
+        border-radius: 5px;
+        padding: 16px;
+        text-align: center;
+        background: #86bdff;
+
+        &.info {
+            background: #86bdff;
+        }
+
+        &.warning {
+            background: #fdffa1;
+        }
+
+        &.error{
+            background: #cd8c8f;
+        }
+    }
+}
