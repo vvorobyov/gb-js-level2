@@ -1,0 +1,23 @@
+{
+  "name": "js2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vvorobyov/gb-js-level2.git"
+  },
+  "author": "Vladislav Vorobyov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vvorobyov/gb-js-level2/issues"
+  },
+  "homepage": "https://github.com/vvorobyov/gb-js-level2#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "node-static": "^0.7.11"
+  }
+}
