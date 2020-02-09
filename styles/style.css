@@ -1,3 +1,4 @@
+@charset "UTF-8";
 html {
   font-family: "Roboto", sans-serif;
   font-size: 16px;
@@ -33,10 +34,8 @@ header {
   outline: none;
 }
 
-.goods-search {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  column-gap: 14px;
+.goods-search-value {
+  width: 100%;
 }
 
 .cart {
@@ -48,7 +47,7 @@ header {
 }
 .cart > .cart-container {
   position: absolute;
-  display: none;
+  margin-top: 14px;
   width: 500px;
   max-width: calc(100vw - 28px);
   right: 0;
@@ -56,8 +55,49 @@ header {
   border: 1px solid #f6f6f6;
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3);
 }
-.cart:hover > .cart-container {
+.cart > .cart-container h4 {
+  text-align: center;
+}
+
+.cart-goods {
+  list-style: none;
+  padding: 0 16px;
+}
+.cart-goods > .cart-item {
+  display: grid;
+  grid-template-columns: 1fr 70px 19px auto 19px;
+  column-gap: 5px;
+  margin: 2px 0;
+  padding: 2px 0;
+}
+.cart-goods > .cart-item > .cartBtn {
+  margin: 0;
+  padding: 0;
+  width: 18px;
+  height: 18px;
+  font-weight: bold;
+  text-align: center;
+  background: #d1b2b2;
+  border-radius: 50%;
+  border: none;
+  outline: none;
+}
+.cart-goods > .cart-item > .cart-item-price {
   display: block;
+  justify-self: end;
+}
+.cart-goods > .cart-item > .cart-item-price:after {
+  content: "р.";
+}
+.cart-goods > .cart-item:hover {
+  background: #fffc3a;
+}
+.cart-goods > .cart-item > .cart-item-count {
+  display: block;
+  justify-self: end;
+}
+.cart-goods > .cart-item > .cart-item-count:after {
+  content: "шт.";
 }
 
 main {
@@ -66,6 +106,13 @@ main {
 }
 
 h2 {
+  text-align: center;
+}
+
+.goods-not-found {
+  padding: 16px;
+}
+.goods-not-found > h3 {
   text-align: center;
 }
 
@@ -88,6 +135,39 @@ h2 {
 }
 .goods-list > .goods-item > p {
   margin-bottom: 0;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+
+.hotify-list {
+  position: fixed;
+  width: 360px;
+  max-height: calc(100vh - 58px);
+  top: 59px;
+  left: 0;
+  overflow: auto;
+}
+.hotify-list > .notify {
+  margin: 5px;
+  border-radius: 5px;
+  padding: 16px;
+  text-align: center;
+  background: #86bdff;
+}
+.hotify-list > .notify.info {
+  background: #86bdff;
+}
+.hotify-list > .notify.warning {
+  background: #fdffa1;
+}
+.hotify-list > .notify.error {
+  background: #cd8c8f;
 }
 
 /*# sourceMappingURL=style.css.map */
