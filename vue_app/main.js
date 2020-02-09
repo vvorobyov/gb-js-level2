@@ -1,5 +1,3 @@
-const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
-
 function debounce(callback, wait, immediate) {
     let timeout;
     return function () {
@@ -84,7 +82,7 @@ Vue.component('goods-item', {
     template: `
         <div class="goods-item">
             <img src="https://via.placeholder.com/150" alt="">
-            <h3>{{ good.product_name }}</h3>
+            <h3>{{ good.name }}</h3>
             <p>{{ good.price }}</p>
             <button class="button" @click="addToCart">Добавить</button>
         </div>
@@ -106,7 +104,7 @@ Vue.component('goods-list', {
     template: `
         <div class="goods-list" v-if="isFilteredGoodsNotEmpty" >
             <goods-item v-for="good in goods" 
-                       :key="good.id_product" :good="good" 
+                       :key="good.id" :good="good" 
                        @add-to-cart="addToCart"/>
         </div>
         <div class="goods-not-found" v-else>
@@ -137,7 +135,7 @@ Vue.component('cart-item', {
     props: ['good'],
     template: `
         <li class="cart-item">
-            <span class="cart-item-name">{{ good.product_name }}</span>
+            <span class="cart-item-name">{{ good.name }}</span>
             <span class="cart-item-price">{{ good.price }}</span>
             <button class="cartBtn" @click="decGood">-</button>
             <span class="cart-item-count">{{ good.quantity }}</span>
@@ -146,18 +144,10 @@ Vue.component('cart-item', {
     `,
     methods: {
         incGood() {
-            this.good.quantity++;
-            this.$root.addNotify(`Количество товара "${this.good.product_name}" увеличено до ${this.good.quantity}!`)
+            this.$emit('add-good', this.good);
         },
         decGood() {
-            this.good.quantity--;
-            if (this.good.quantity === 0){
-                this.$emit('remove-good-from-cart', this.good);
-                this.$root.addNotify(`"Товар ${this.good.product_name}" удален из корзины!`, 'warning')
-            }else{
-                this.$root.addNotify(`Количество товара "${this.good.product_name}" уменьшено до ${this.good.quantity}!`)
-            }
-
+            this.$emit('remove-good', this.good);
         }
     }
 });
@@ -191,8 +181,9 @@ Vue.component('cart', {
                 <div class="cart-container" v-if="isVisibleCart">
                     <ul class="cart-goods" v-if="isNotEmptyCart">
                         <cart-item v-for="good in goods" 
-                                   :key="good.id_product" :good="good"
-                                   @remove-good-from-cart="removeGood" 
+                                   :key="good.id" :good="good"
+                                   @remove-good="removeGood" 
+                                   @add-good="addGood"
                                    />
                     </ul>
                     <div class="empty-cart" v-else>
@@ -207,8 +198,10 @@ Vue.component('cart', {
             this.isVisibleCart = !this.isVisibleCart;
         },
         removeGood(good){
-            const index = this.goods.indexOf(good);
-            this.goods.splice(index, 1);
+            this.$emit('remove-good', good);
+        },
+        addGood(good){
+            this.$emit('add-good', good);
         }
     },
 
@@ -223,7 +216,7 @@ const app = new Vue({
         cart: [],
     },
     methods: {
-        makeGETRequest(url) {
+        makeRequest(url, method, data) {
             return new Promise((resolve, reject) => {
                 let xhr;
                 if (window.XMLHttpRequest) {
@@ -244,13 +237,18 @@ const app = new Vue({
                     reject(err)
                 };
 
-                xhr.open('GET', url, true);
-                xhr.send();
+                xhr.open(method.toUpperCase(), url, true);
+                if (data) {
+                    data = JSON.stringify(data);
+                    xhr.setRequestHeader("content-type", "application/json;charset=UTF-8");
+                }
+                console.log(data);
+                xhr.send(data);
             })
         },
         async fetchGoods(){
             try {
-                this.goods = await this.makeGETRequest(`${API_URL}/catalogData.json`);
+                this.goods = await this.makeRequest(`api/catalog`, 'get');
                 this.filteredGoods = [...this.goods];
             } catch (e) {
                 console.log(e);
@@ -262,8 +260,8 @@ const app = new Vue({
         async fetchCart(){
             try {
                 //  TODO для устранения ошибки с корзиной необходимо удалить 1 в конце V
-                const result = await this.makeGETRequest(`${API_URL}/getBasket.json1`);
-                this.cart = result.contents;
+                const result = await this.makeRequest(`/api/cart`, 'get');
+                this.cart = result;
                 return result
 
             } catch (e) {
@@ -272,15 +270,24 @@ const app = new Vue({
                     'error', 10000);
             }
         },
-        addToCartHandler(good) {
-            const cartItem = this.cart.find(cartGood => cartGood.id_product == good.id_product);
-            if (cartItem){
-                cartItem.quantity++;
-                this.addNotify(`Количество товара "${good.product_name}" увеличено до ${cartItem.quantity}!`);
-            } else {
-                this.cart.push({...good, quantity: 1});
-                this.addNotify(`Товар "${good.product_name}" добавлен в корзину!`);
+        async addToCartHandler(good) {
+            try {
+                this.cart = await this.makeRequest(`/api/cart`, 'post', good);
+                this.addNotify(`Товар "${good.name}" добавлен в корзину!`);
+            } catch (e) {
+                console.log(e)
+                this.addNotify(e, 'error', 10000);
             }
+        },
+        async removeFromCartHandler(good) {
+            try {
+                this.cart = await this.makeRequest(`/api/cart/${good.id}`, 'delete');
+                this.addNotify(`1 ед. товара "${good.name}" удалена из корзины!`);
+            } catch (e) {
+                console.log(e)
+                this.addNotify(e, 'error', 10000);
+            }
+
         },
         addNotify(message, type, timeout) {
             this.$refs.notifier.addNotify(message, type, timeout);
@@ -290,7 +297,7 @@ const app = new Vue({
         filteredGoodsHandler(){
             return debounce((event) => {
                 const regext = new RegExp(event.target.value.trim(), 'i');
-                this.filteredGoods = this.goods.filter(good => regext.test(good.product_name));
+                this.filteredGoods = this.goods.filter(good => regext.test(good.name));
             }, 300)
         },
     },

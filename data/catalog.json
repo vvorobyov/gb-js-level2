@@ -1,0 +1,23 @@
+[
+  { "id": 1, "name": "Мышка", "price": 100,
+    "img": "https://via.placeholder.com/150"
+  },
+  { "id": 2, "name": "Клавиатура", "price": 200,
+    "img": "https://via.placeholder.com/150"
+  },
+  { "id": 3, "name": "Колонки", "price": 130,
+    "img": "https://via.placeholder.com/150"
+  },
+  { "id": 4, "name": "Наушники", "price": 150,
+    "img": "https://via.placeholder.com/150"
+  },
+  { "id": 5, "name": "Ноутбук", "price": 400,
+    "img": "https://via.placeholder.com/150"
+  },
+  { "id": 6, "name": "Коврик", "price": 150,
+    "img": "https://via.placeholder.com/150"
+  },
+  { "id": 7, "name": "Кресло", "price": 160,
+    "img": "https://via.placeholder.com/150"
+  }
+]

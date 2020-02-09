@@ -13,7 +13,7 @@
 <div id="app">
     <header>
         <goods-search @change-search-value="filteredGoodsHandler"></goods-search>
-        <cart :goods="cart"></cart>
+        <cart :goods="cart" @add-good="addToCartHandler" @remove-good="removeFromCartHandler"></cart>
     </header>
     <main>
         <goods-list :goods="filteredGoods" @add-to-cart="addToCartHandler"/>
